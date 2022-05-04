@@ -17,3 +17,9 @@ flask run
 ```
 访问localhost:8000，若显示Index则服务器启动成功
 ```
+
+## 登录
+```
+email: admin@gmail.com
+password: Abc123456
+```
