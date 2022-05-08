@@ -1,7 +1,9 @@
+import pathlib
+
 from flask import Blueprint, jsonify, request, make_response
 from . import db
 from .models import *
-import random, uuid
+import random, uuid, os
 from .utils import *
 
 users = Blueprint('users', __name__)
@@ -110,6 +112,97 @@ def save_userinfo():
                 print(e)
                 response_object['message'] = "Failed to save!"
     return jsonify(response_object)
+
+
+@users.route('/change-profile-pic', methods=['GET', 'POST'])
+def change_profile_pic():
+    if request.method == 'POST':
+        image = request.files['image']
+        user_id = request.form.get('user_id')
+
+    response_object = {}
+    response_object['status'] = False
+
+    user = User.query.filter_by(user_id=user_id).first()
+    # Check whether user exist
+    if not user:
+        response_object['messeage'] = "Error: User does not exist!"
+    else:
+        config = configparser.RawConfigParser()
+        config.read('config.cfg')
+        upload_dict = dict(config.items('UPLOAD'))
+        upload_folder = upload_dict["upload_folder"]
+        dir = os.path.join(upload_folder, "profile_pic")
+        if not os.path.exists(dir):
+            os.makedirs(dir)
+        if image:
+            file_ext = pathlib.Path(image.filename).suffix
+            filename = uuid.uuid4().hex + file_ext
+            path = os.path.join(dir, filename)
+            image.save(path)
+            if user.profile_photo:
+                old_image = os.path.join(dir, user.profile_photo)
+                if os.path.isfile(old_image):
+                    os.remove(old_image)
+            user.profile_photo = filename
+            try:
+                db.session.commit()
+                response_object['status'] = True
+                response_object['message'] = "Profile pic uploaded successfully"
+            except Exception as e:
+                print(e)
+                response_object['message'] = "Failed to upload profile pic"
+        else:
+            response_object['message'] = "Error: No image!"
+    return jsonify(response_object)
+
+
+@users.route('/query-userinfo', methods=['GET', 'POST'])
+def query_userinfo():
+    if request.method == 'POST':
+        post_data = request.get_json()
+        user_id = post_data.get('user_id')
+
+    response_object = {}
+    response_object['status'] = False
+
+    user = User.query.filter_by(user_id=user_id).first()
+    # Check if user exist
+    if not user:
+        response_object['message'] = "Error: User does not exist!"
+    else:
+        response_object["status"] = True
+        response_object["message"] = "Query success!"
+        response_object["username"] = user.username
+        response_object["email"] = user.email
+        response_object["description"] = user.description
+        response_object["profile_photo"] = user.profile_photo
+    return jsonify(response_object)
+
+
+@users.route('/profile-pic/<string:filename>', methods=['GET'])
+def show_profile_pic(filename):
+    if request.method == 'GET':
+        response_object = {}
+        response_object['status'] = False
+        if not filename:
+            response_object['message'] = "Error: Too few arguments!"
+            return jsonify(response_object)
+        else:
+            config = configparser.RawConfigParser()
+            config.read('config.cfg')
+            upload_dict = dict(config.items('UPLOAD'))
+            upload_folder = upload_dict["upload_folder"]
+            dir = os.path.join(upload_folder, "profile_pic")
+            image = os.path.join(dir, filename)
+            if not os.path.isfile(image):
+                response_object['message'] = "Error: File does not exist!"
+                return jsonify(response_object)
+            else:
+                image_data = open(image, "rb").read()
+                response = make_response(image_data)
+                response.headers['Content-Type'] = "image/png"
+                return response
 
 
 @users.route('/follow', methods=['GET', 'POST'])
