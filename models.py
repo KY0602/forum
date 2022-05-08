@@ -41,4 +41,16 @@ RelationUserBlocked = db.Table(
     db.Column('user_id_blocked', db.String(255), db.ForeignKey(User.user_id), primary_key=True)
 )
 
+class Status(db.Model):
+    __tablename__ = 'status'
+    id = db.Column(db.String(255), primary_key=True)
+    user_id = db.Column(db.String(255))
+    type = db.Column(db.String(45))
+    title = db.Column(db.String(255))
+    text = db.Column(db.Text)
+    media = db.Column(db.Text)
+    location = db.Column(db.Text)
+    date_created = db.Column(db.DateTime)
+    like = db.Column(db.Integer, default=0)
+    like_users = db.Column(db.Text)
 

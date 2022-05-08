@@ -3,7 +3,7 @@ import pathlib
 from flask import Blueprint, jsonify, request, make_response
 from . import db
 from .models import *
-import random, uuid, os
+import uuid, os
 from .utils import *
 
 users = Blueprint('users', __name__)
