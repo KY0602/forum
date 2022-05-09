@@ -507,6 +507,8 @@ def query_status():
         response_object['status'] = True
         response_object['message'] = "Query success!"
         response_object['creator_id'] = status.user_id
+        user = User.query.filter_by(user_id=status.user_id).first()
+        response_object['creator_username'] = user.username
         response_object['type'] = status.type
         response_object['title'] = status.title
         response_object['text'] = status.text
