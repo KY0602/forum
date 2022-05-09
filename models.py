@@ -41,10 +41,12 @@ RelationUserBlocked = db.Table(
     db.Column('user_id_blocked', db.String(255), db.ForeignKey(User.user_id), primary_key=True)
 )
 
+
 class Status(db.Model):
     __tablename__ = 'status'
     id = db.Column(db.String(255), primary_key=True)
     user_id = db.Column(db.String(255))
+    username = db.Column(db.String(255))
     type = db.Column(db.String(45))
     title = db.Column(db.String(255))
     text = db.Column(db.Text)
@@ -53,4 +55,23 @@ class Status(db.Model):
     date_created = db.Column(db.DateTime)
     like = db.Column(db.Integer, default=0)
     like_users = db.Column(db.Text)
+
+    relation_status_comments = db.relationship("RelationStatusComments", backref="status")
+
+
+class Comments(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.String(255), primary_key=True)
+    user_id = db.Column(db.String(255))
+    content = db.Column(db.Text)
+    date_created = db.Column(db.DateTime)
+
+    relation_status_comments = db.relationship("RelationStatusComments", backref="comments")
+
+
+class RelationStatusComments(db.Model):
+    __tablename__ = 'relation_status_comments'
+    status_id = db.Column(db.String(255), db.ForeignKey('status.id'), primary_key=True)
+    comment_id = db.Column(db.String(255), db.ForeignKey('comments.id'), primary_key=True)
+
 

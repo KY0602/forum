@@ -6,3 +6,5 @@ flask_sqlalchemy
 Flask-APScheduler
 tzlocal==2.1
 pyjwt
+fuzzywuzzy
+python-Levenshtein

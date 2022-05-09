@@ -2,6 +2,7 @@ import scrypt, base64, configparser, random, json
 import re
 from datetime import datetime, timedelta
 from .models import *
+from fuzzywuzzy import process
 import random, string, jwt
 
 
@@ -66,3 +67,12 @@ def check_valid(username, password, description):
         return "description", False
 
     return "ok", True
+
+
+def fuzzysearch(key, options, threshold=75):
+    ratios = process.extract(key, options)
+    selected = []
+    for i in ratios:
+        if i[1] > threshold:
+            selected.append(i[0])
+    return selected
