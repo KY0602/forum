@@ -29,3 +29,14 @@ flask run
 email: admin@gmail.com
 password: Abc123456
 ```
+
+## 数据库
+1. 本地创建数据库：
+```
+DBSM：MySQL
+端口：3306
+创建用户：forum，密码：123456
+数据库名称：forum_app
+```
+
+2. 使用MySQLWorkBench或任意MySQL工具运行forum_app.sql导入数据库结构即可
