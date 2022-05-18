@@ -53,14 +53,10 @@ def checkregister(content):
     return "ok", True
 
 
-def check_valid(username, password, description):
+def check_valid(username, description):
     # Username (Length between 6-10)
     if not check_username(username):
         return "username", False
-
-    # Password (Length between 6-18, containing lower-case, upper-case and numbers)
-    if not check_password(password):
-        return "password", False
 
     # Description (Length between 0-255):
     if not check_len255(description):

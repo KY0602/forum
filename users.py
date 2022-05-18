@@ -86,7 +86,6 @@ def save_userinfo():
         post_data = request.get_json()
         user_id = post_data.get('user_id')
         username = post_data.get('username')
-        password = post_data.get('password')
         description = post_data.get('description')
 
     response_object = {}
@@ -97,12 +96,11 @@ def save_userinfo():
     if not user:
         response_object['message'] = 'Error: User does not exist!'
     else:
-        msg, status = check_valid(username, password, description)
+        msg, status = check_valid(username, description)
         if not status:
             response_object['message'] = msg
         else:
             user.username = username
-            user.password = encrypt_password(password)
             user.description = description
             try:
                 db.session.commit()
@@ -111,6 +109,39 @@ def save_userinfo():
             except Exception as e:
                 print(e)
                 response_object['message'] = "Failed to save!"
+    return jsonify(response_object)
+
+
+@users.route('/change-password', methods=['GET', 'POST'])
+def change_password():
+    if request.method == 'POST':
+        post_data = request.get_json()
+        user_id = post_data.get('user_id')
+        old_password = post_data.get('old_password')
+        new_password = post_data.get('new_password')
+
+    response_object = {}
+    response_object['status'] = False
+
+    user = User.query.filter_by(user_id=user_id).first()
+    # Check whether user exist
+    if not user:
+        response_object['message'] = "Error: User does ot exist!"
+    else:
+        old_pw = encrypt_password(old_password)
+        if old_pw != user.password:
+            response_object['message'] = "Error: Old password incorrect!"
+        else:
+            if not check_password(new_password):
+                response_object['message'] = "Error: Invalid password format"
+            else:
+                user.password = encrypt_password(new_password)
+                try:
+                    db.session.commit()
+                    response_object['status'] = True
+                    response_object['message'] = "Password changed successfully!"
+                except Exception as e:
+                    response_object['message'] = "Failed to change password"
     return jsonify(response_object)
 
 
