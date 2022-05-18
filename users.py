@@ -130,10 +130,10 @@ def change_password():
     else:
         old_pw = encrypt_password(old_password)
         if old_pw != user.password:
-            response_object['message'] = "Error: Old password incorrect!"
+            response_object['message'] = "Password incorrect!"
         else:
             if not check_password(new_password):
-                response_object['message'] = "Error: Invalid password format"
+                response_object['message'] = "password"
             else:
                 user.password = encrypt_password(new_password)
                 try:
