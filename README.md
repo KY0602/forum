@@ -40,3 +40,6 @@ DBSM：MySQL
 ```
 
 2. 使用MySQLWorkBench或任意MySQL工具运行forum_app.sql导入数据库结构即可
+
+## 前后端接口文档
+https://www.showdoc.com.cn/1931979514400970
