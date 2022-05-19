@@ -180,6 +180,7 @@ def change_profile_pic():
                 db.session.commit()
                 response_object['status'] = True
                 response_object['message'] = "Profile pic uploaded successfully"
+                response_object['profile_pic'] = filename
             except Exception as e:
                 print(e)
                 response_object['message'] = "Failed to upload profile pic"
