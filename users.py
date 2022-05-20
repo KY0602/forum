@@ -322,8 +322,8 @@ def check_follow():
     return jsonify(response_object)
 
 
-@users.route('/block', methods=['GET', 'POST'])
-def block():
+@users.route('/block-unblock', methods=['GET', 'POST'])
+def block_unblock():
     if request.method == 'POST':
         post_data = request.get_json()
         user_id = post_data.get('user_id')
@@ -338,53 +338,20 @@ def block():
     if not user or not user_blocked:
         response_object['message'] = "Error: User does not exist!"
     else:
+        blocking_list = user.blocking
         # Check whether already blocked
         if user_blocked in user.blocking:
-            response_object['message'] = "Error: Already blocked!"
-        else:
-            blocking_list = user.blocking
-            blocking_list.append(user_blocked)
-            user.blocking = blocking_list
-            try:
-                db.session.commit()
-                response_object['status'] = True
-                response_object['message'] = "Blocked successfully!"
-            except Exception as e:
-                print(e)
-                response_object['message'] = "Failed to block!"
-    return jsonify(response_object)
-
-
-@users.route('/unblock', methods=['GET', 'POST'])
-def unblock():
-    if request.method == 'POST':
-        post_data = request.get_json()
-        user_id = post_data.get('user_id')
-        user_id_blocked = post_data.get('user_id_blocked')
-
-    response_object = {}
-    response_object['status'] = False
-
-    user = User.query.filter_by(user_id=user_id).first()
-    user_blocked = User.query.filter_by(user_id=user_id_blocked).first()
-    # Check whether users exist
-    if not user or not user_blocked:
-        response_object['message'] = "Error: User does not exist!"
-    else:
-        # Check whether already blocked
-        if user_blocked not in user.blocking:
-            response_object['message'] = "Error: Not blocked!"
-        else:
-            blocking_list = user.blocking
             blocking_list.remove(user_blocked)
-            user.blocking = blocking_list
-            try:
-                db.session.commit()
-                response_object['status'] = True
-                response_object['message'] = "Unblocked successfully!"
-            except Exception as e:
-                print(e)
-                response_object['message'] = "Failed to unblock!"
+        else:
+            blocking_list.append(user_blocked)
+        user.blocking = blocking_list
+        try:
+            db.session.commit()
+            response_object['status'] = True
+            response_object['message'] = "Blocked/Unblocked successfully!"
+        except Exception as e:
+            print(e)
+            response_object['message'] = "Failed to block/unblock!"
     return jsonify(response_object)
 
 
