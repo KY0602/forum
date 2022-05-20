@@ -237,41 +237,8 @@ def show_profile_pic(filename):
                 return response
 
 
-@users.route('/follow', methods=['GET', 'POST'])
-def follow():
-    if request.method == 'POST':
-        post_data = request.get_json()
-        user_id = post_data.get('user_id')
-        user_id_followed = post_data.get('user_id_followed')
-
-    response_object = {}
-    response_object['status'] = False
-
-    user = User.query.filter_by(user_id=user_id).first()
-    user_followed = User.query.filter_by(user_id=user_id_followed).first()
-    # Check whether users exist
-    if not user or not user_followed:
-        response_object['message'] = "Error: User does not exist!"
-    else:
-        # Check whether already followed
-        if user_followed in user.following:
-            response_object['message'] = "Error: Already followed!"
-        else:
-            following_list = user.following
-            following_list.append(user_followed)
-            user.following = following_list
-            try:
-                db.session.commit()
-                response_object['status'] = True
-                response_object['message'] = "Followed successfully!"
-            except Exception as e:
-                print(e)
-                response_object['message'] = "Failed to follow!"
-    return jsonify(response_object)
-
-
-@users.route('/unfollow', methods=['GET', 'POST'])
-def unfollow():
+@users.route('/follow-unfollow', methods=['GET', 'POST'])
+def follow_unfollow():
     if request.method == 'POST':
         post_data = request.get_json()
         user_id = post_data.get('user_id')
@@ -287,19 +254,20 @@ def unfollow():
         response_object['message'] = "Error: User does not exist!"
     else:
         # Check whether followed
+        following_list = user.following
         if user_followed not in user.following:
-            response_object['message'] = "Error: Not followed!"
+            following_list.append(user_followed)
         else:
-            following_list = user.following
             following_list.remove(user_followed)
-            user.following = following_list
-            try:
-                db.session.commit()
-                response_object['status'] = True
-                response_object['message'] = "Unfollowed successfully!"
-            except Exception as e:
-                print(e)
-                response_object['message'] = "Failed to unfollow!"
+
+        user.following = following_list
+        try:
+            db.session.commit()
+            response_object['status'] = True
+            response_object['message'] = "Followed/Unfollowed successfully!"
+        except Exception as e:
+            print(e)
+            response_object['message'] = "Failed to unfollow!"
     return jsonify(response_object)
 
 
