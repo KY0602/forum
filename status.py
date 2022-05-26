@@ -191,13 +191,12 @@ def query_user_status():
         ret = []
         for status in status_list:
             item = {}
+            item['status_id'] = status.id;
             item['creator_id'] = status.user_id
             item['creator_username'] = status.username
             item['type'] = status.type
             item['title'] = status.title
             item['text'] = status.text
-            item['media'] = status.media
-            item['location'] = status.location
             item['date_created'] = status.date_created
             item['like'] = status.like
             ret.append(item)
@@ -232,13 +231,12 @@ def query_all_status():
             if status.user_id in blocked_users_id:
                 continue
             item = {}
+            item['status_id'] = status.id;
             item['creator_id'] = status.user_id
             item['creator_username'] = status.username
             item['type'] = status.type
             item['title'] = status.title
             item['text'] = status.text
-            item['media'] = status.media
-            item['location'] = status.location
             item['date_created'] = status.date_created
             item['like'] = status.like
             ret.append(item)
@@ -279,13 +277,12 @@ def query_followed_status():
             if status.user_id in blocked_users_id:
                 continue
             item = {}
+            item['status_id'] = status.id
             item['creator_id'] = status.user_id
             item['creator_username'] = status.username
             item['type'] = status.type
             item['title'] = status.title
             item['text'] = status.text
-            item['media'] = status.media
-            item['location'] = status.location
             item['date_created'] = status.date_created
             item['like'] = status.like
             ret.append(item)
@@ -321,13 +318,12 @@ def query_status_by_type():
             if status.user_id in blocked_users_id:
                 continue
             item = {}
+            item['status_id'] = status.id
             item['creator_id'] = status.user_id
             item['creator_username'] = status.username
             item['type'] = status.type
             item['title'] = status.title
             item['text'] = status.text
-            item['media'] = status.media
-            item['location'] = status.location
             item['date_created'] = status.date_created
             item['like'] = status.like
             ret.append(item)
@@ -372,13 +368,12 @@ def query_status_by_creator():
             if status.user_id in blocked_users_id:
                 continue
             item = {}
+            item['status_id'] = status.id
             item['creator_id'] = status.user_id
             item['creator_username'] = status.username
             item['type'] = status.type
             item['title'] = status.title
             item['text'] = status.text
-            item['media'] = status.media
-            item['location'] = status.location
             item['date_created'] = status.date_created
             item['like'] = status.like
             ret.append(item)
@@ -423,13 +418,12 @@ def query_status_title():
             if status.user_id in blocked_users_id:
                 continue
             item = {}
+            item['status_id'] = status.id
             item['creator_id'] = status.user_id
             item['creator_username'] = status.username
             item['type'] = status.type
             item['title'] = status.title
             item['text'] = status.text
-            item['media'] = status.media
-            item['location'] = status.location
             item['date_created'] = status.date_created
             item['like'] = status.like
             ret.append(item)
@@ -474,13 +468,12 @@ def query_status_by_text():
             if status.user_id in blocked_users_id:
                 continue
             item = {}
+            item['status_id'] = status.id
             item['creator_id'] = status.user_id
             item['creator_username'] = status.username
             item['type'] = status.type
             item['title'] = status.title
             item['text'] = status.text
-            item['media'] = status.media
-            item['location'] = status.location
             item['date_created'] = status.date_created
             item['like'] = status.like
             ret.append(item)
@@ -507,8 +500,7 @@ def query_status():
         response_object['status'] = True
         response_object['message'] = "Query success!"
         response_object['creator_id'] = status.user_id
-        user = User.query.filter_by(user_id=status.user_id).first()
-        response_object['creator_username'] = user.username
+        response_object['creator_username'] = status.username
         response_object['type'] = status.type
         response_object['title'] = status.title
         response_object['text'] = status.text
