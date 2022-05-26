@@ -1,13 +1,28 @@
 from flask import Flask, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_apscheduler import APScheduler
+from flask.json import JSONEncoder
+from datetime import date
 import configparser
 
 db = SQLAlchemy()
 
+class CustomJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        try:
+            if isinstance(obj, date):
+                return obj.isoformat()
+            iterable = iter(obj)
+        except TypeError:
+            pass
+        else:
+            return list(iterable)
+        return JSONEncoder.default(self, obj)
+
 
 def create_app():
     app = Flask(__name__)
+    app.json_encoder = CustomJSONEncoder
 
     config = configparser.RawConfigParser()
     config.read('config.cfg')
