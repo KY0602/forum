@@ -361,8 +361,11 @@ def query_status_by_creator():
         # Select usernames similar to creator
         selected_username = fuzzysearch(creator, username_list)
 
-        status_list = Status.query.filter(or_(*[Status.username.like(i) for i in selected_username])) \
-            .order_by(desc(Status.date_created)).all()
+        if len(selected_username) != 0:
+            status_list = Status.query.filter(or_(*[Status.username.like(i) for i in selected_username])) \
+                .order_by(desc(Status.date_created)).all()
+        else:
+            status_list = []
         ret = []
         for status in status_list:
             if status.user_id in blocked_users_id:
@@ -411,8 +414,11 @@ def query_status_title():
         # Select titles similar to title
         selected_title = fuzzysearch(title, title_list)
 
-        status_list = Status.query.filter(or_(*[Status.title.like(i) for i in selected_title])) \
-            .order_by(desc(Status.date_created)).all()
+        if len(selected_title) != 0:
+            status_list = Status.query.filter(or_(*[Status.title.like(i) for i in selected_title]))\
+                .order_by(desc(Status.date_created)).all()
+        else:
+            status_list = []
         ret = []
         for status in status_list:
             if status.user_id in blocked_users_id:
@@ -461,8 +467,11 @@ def query_status_by_text():
         # Select texts similar to text
         selected_text = fuzzysearch(text, text_list)
 
-        status_list = Status.query.filter(or_(*[Status.text.like(i) for i in selected_text])) \
-            .order_by(desc(Status.date_created)).all()
+        if len(selected_text) != 0:
+            status_list = Status.query.filter(or_(*[Status.text.like(i) for i in selected_text])) \
+                .order_by(desc(Status.date_created)).all()
+        else:
+            status_list = []
         ret = []
         for status in status_list:
             if status.user_id in blocked_users_id:
