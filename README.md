@@ -43,3 +43,4 @@ DBSM：MySQL
 
 ## 前后端接口文档
 [接口文档](https://www.showdoc.com.cn/1931979514400970)
+- 可以用runapi或postman api等接口调试工具手动地上传图片等
