@@ -101,6 +101,9 @@ def save_userinfo():
             response_object['message'] = msg
         else:
             user.username = username
+            status_list = Status.query.filter_by(user_id=user_id)
+            for status in status_list:
+                status.username = username
             user.description = description
             try:
                 db.session.commit()
