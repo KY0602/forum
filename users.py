@@ -432,6 +432,28 @@ def register_token():
     return jsonify(response_object)
 
 
+@users.route('/unregister-token', methods=['GET', 'POST'])
+def unregister_token():
+    if request.method == 'POST':
+        post_data = request.get_json()
+        user_id = post_data.get('user_id')
+
+    response_object = {}
+    response_object['status'] = False
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        response_object['message'] = "Error: User does not exist!"
+    else:
+        user.token = None
+        try:
+            db.session.commit()
+            response_object['status'] = True
+            response_object['message'] = "Token successfully removed!"
+        except Exception as e:
+            print(e)
+    return jsonify(response_object)
+
+
 @users.route('/test-notification', methods=['GET', 'POST'])
 def test_notification():
     if request.method == 'POST':
