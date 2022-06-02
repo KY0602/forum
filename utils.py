@@ -1,9 +1,10 @@
 import scrypt, base64, configparser, random, json
 import re
 from datetime import datetime, timedelta
+from . import db
 from .models import *
 from fuzzywuzzy import process
-import random, string, jwt
+import random, string, jwt, requests, json
 
 
 def encrypt_password(pw):
@@ -72,3 +73,45 @@ def fuzzysearch(key, options, threshold=75):
         if i[1] > threshold:
             selected.append(i[0])
     return selected
+
+
+def sendNotification(title, message, user_id):
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        return False
+    else:
+        config = configparser.RawConfigParser()
+        config.read('config.cfg')
+        db_dict = dict(config.items('NOTIFICATIONS'))
+        server_token = db_dict["server_token"]
+        client_token = user.token
+        if client_token is None:
+            return False
+        else:
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': 'key=' + server_token,
+            }
+            body = {
+                'notification': {'title': title, 'body': message},
+                'to': client_token,
+                'priority': 'high',
+            }
+            response = requests.post("https://fcm.googleapis.com/fcm/send", headers=headers, data=json.dumps(body))
+            if response.status_code == 200:
+                return True
+            else:
+                return False
+
+
+def notifyFollowers(user_id):
+    title = '新动态'
+    message = '你关注的作者更新了'
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        return False
+    else:
+        for followers in user.followers:
+            sendNotification(title, message, followers.user_id)
+        return True
+

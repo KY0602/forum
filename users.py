@@ -407,3 +407,48 @@ def check_block():
         response_object['status'] = True
         response_object['message'] = "Query success!"
     return jsonify(response_object)
+
+
+@users.route('/register-token', methods=['GET', 'POST'])
+def register_token():
+    if request.method == 'POST':
+        post_data = request.get_json()
+        user_id = post_data.get('user_id')
+        token = post_data.get('token')
+
+    response_object = {}
+    response_object['status'] = False
+    user = User.query.filter_by(user_id=user_id).first()
+    if not user:
+        response_object['message'] = "Error: User does not exist!"
+    else:
+        user.token = token
+        try:
+            db.session.commit()
+            response_object['status'] = True
+            response_object['message'] = "Token successfully saved!"
+        except Exception as e:
+            print(e)
+    return jsonify(response_object)
+
+
+@users.route('/test-notification', methods=['GET', 'POST'])
+def test_notification():
+    if request.method == 'POST':
+        post_data = request.get_json()
+        user_id = post_data.get('user_id')
+
+    response_object = {}
+    response_object['status'] = sendNotification("Test", "Hello World", user_id)
+    return jsonify(response_object)
+
+
+@users.route('/test-followers-notification', methods=['GET', 'POST'])
+def test_followers_notification():
+    if request.method == 'POST':
+        post_data = request.get_json()
+        user_id = post_data.get('user_id')
+
+    response_object = {}
+    response_object['status'] = notifyFollowers(user_id)
+    return jsonify(response_object)

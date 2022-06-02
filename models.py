@@ -11,6 +11,7 @@ class User(db.Model):
     password = db.Column(db.String(255))
     description = db.Column(db.String(255))
     profile_photo = db.Column(db.Text)
+    token = db.Column(db.String(255))
 
     following = db.relationship(
         'User',

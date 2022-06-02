@@ -3,7 +3,7 @@ import pathlib
 from flask import Blueprint, jsonify, request, make_response
 from . import db
 from .models import *
-from .utils import check_len255, fuzzysearch
+from .utils import *
 from datetime import datetime
 from sqlalchemy import desc, or_
 import uuid, os, json, configparser
@@ -54,6 +54,9 @@ def create_status():
             like_users = []
             status.like_users = json.dumps(like_users)
             db.session.add(status)
+
+            # Notify followers
+            notifyFollowers(user_id)
         # Image status
         elif type == "IMAGE" or type == "AUDIO" or type == "VIDEO":
             if media:
@@ -81,6 +84,9 @@ def create_status():
 
                 status.media = filename
                 db.session.add(status)
+
+                # Notify followers
+                notifyFollowers(user_id)
             else:
                 response_object['message'] = "Error: No media included!"
         else:
@@ -530,43 +536,12 @@ def query_status():
     return jsonify(response_object)
 
 
-@status.route('/like-status', methods=['GET', 'POST'])
-def like_status():
+@status.route('/like-unlike', methods=['GET', 'POST'])
+def like_unlike():
     if request.method == 'POST':
         post_data = request.get_json()
         status_id = post_data['status_id']
         user_id = post_data['user_id']
-
-    response_object = {}
-    response_object['status'] = False
-
-    status = Status.query.filter_by(id=status_id).first()
-    user = User.query.filter_by(user_id=user_id).first()
-    if not status:
-        response_object['message'] = "Error: Status does not exist!"
-    elif not user:
-        response_object['message'] = "Error: User does not exist!"
-    else:
-        status.like += 1
-        like_users = json.loads(status.like_users)
-        like_users.append(user_id)
-        status.like_users = json.dumps(like_users)
-        try:
-            db.session.commit()
-            response_object['status'] = True
-            response_object['message'] = "Liked!"
-        except Exception as e:
-            print(e)
-            response_object['message'] = "Failed!"
-    return jsonify(response_object)
-
-
-@status.route('/cancel-like', methods=['GET', 'POST'])
-def cancel_like():
-    if request.method == 'POST':
-        post_data = request.get_json()
-        status_id = post_data.get('status_id')
-        user_id = post_data.get('user_id')
 
     response_object = {}
     response_object['status'] = False
@@ -584,19 +559,28 @@ def cancel_like():
             if user_id == like_user:
                 liked = True
                 break
-        if not liked:
-            response_object['message'] = "Error: User haven't liked the post!"
-        else:
+
+        # If user already liked, unlike instead
+        if liked:
             like_users.remove(user_id)
             status.like -= 1
             status.like_users = json.dumps(like_users)
-            try:
-                db.session.commit()
-                response_object['status'] = True
-                response_object['message'] = "Successfully unliked!"
-            except Exception as e:
-                print(e)
-                response_object['message'] = "Failed to unlike"
+        else:
+            status.like += 1
+            like_users.append(user_id)
+            status.like_users = json.dumps(like_users)
+
+            # Notify creator
+            creator_id = status.user_id
+            sendNotification("点赞", "有人赞了你的动态", creator_id)
+
+        try:
+            db.session.commit()
+            response_object['status'] = True
+            response_object['message'] = "Liked/Unliked!"
+        except Exception as e:
+            print(e)
+            response_object['message'] = "Failed!"
     return jsonify(response_object)
 
 
@@ -657,6 +641,11 @@ def add_comment():
         rel_status_comment = RelationStatusComments(status_id=status_id, comment_id=comment.id)
         db.session.add(comment)
         db.session.add(rel_status_comment)
+
+        # Notify creator
+        creator_id = status.user_id
+        sendNotification("评论", "有人评论了你的动态", creator_id)
+
         try:
             db.session.commit()
             response_object['status'] = True
