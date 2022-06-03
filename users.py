@@ -470,7 +470,8 @@ def test_followers_notification():
     if request.method == 'POST':
         post_data = request.get_json()
         user_id = post_data.get('user_id')
+        status_id = post_data.get('status_id')
 
     response_object = {}
-    response_object['status'] = notifyFollowers(user_id)
+    response_object['status'] = notifyFollowers(user_id, status_id)
     return jsonify(response_object)

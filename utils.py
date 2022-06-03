@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from . import db
 from .models import *
 from fuzzywuzzy import process
-import random, string, jwt, requests, json
+import random, string, jwt, requests, json, uuid
 
 
 def encrypt_password(pw):
@@ -104,7 +104,7 @@ def sendNotification(title, message, user_id):
                 return False
 
 
-def notifyFollowers(user_id):
+def notifyFollowers(user_id, status_id):
     title = '新动态'
     message = '你关注的作者更新了'
     user = User.query.filter_by(user_id=user_id).first()
@@ -113,5 +113,39 @@ def notifyFollowers(user_id):
     else:
         for followers in user.followers:
             sendNotification(title, message, followers.user_id)
+            type = 'NEW_STATUS'
+            add_notifications(followers.user_id, type, title, message, status_id)
         return True
+
+
+def add_notifications(user_id, type, title, text, status_id):
+    user = User.query.filter_by(user_id=user_id).first()
+    status = Status.query.filter_by(id=status_id).first()
+    if not user:
+        return False
+    elif not status:
+        return False
+    else:
+        notifications = Notifications()
+        notifications_id = str(uuid.uuid4())
+        notifications.id = notifications_id
+        notifications.user_id = user_id
+        notifications.type = type
+        notifications.title = title
+        notifications.text = text
+        notifications.status_id = status_id
+        notifications.date_created = datetime.now()
+
+        rel = RelationUserNotifications()
+        rel.user_id = user_id
+        rel.notifications_id = notifications_id
+
+        db.session.add(notifications)
+        db.session.add(rel)
+        try:
+            db.session.commit()
+            return True
+        except Exception as e:
+            print(e)
+            return False
 

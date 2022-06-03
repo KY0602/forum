@@ -29,6 +29,8 @@ class User(db.Model):
         backref='blockers'
     )
 
+    relation_user_notifications = db.relationship('RelationUserNotifications', backref='users')
+
 
 RelationUserFollowed = db.Table(
     'relation_user_followed', Base.metadata,
@@ -74,5 +76,24 @@ class RelationStatusComments(db.Model):
     __tablename__ = 'relation_status_comments'
     status_id = db.Column(db.String(255), db.ForeignKey('status.id'), primary_key=True)
     comment_id = db.Column(db.String(255), db.ForeignKey('comments.id'), primary_key=True)
+
+
+class Notifications(db.Model):
+    __tablename__ = 'notifications'
+    id = db.Column(db.String(255), primary_key=True)
+    user_id = db.Column(db.String(255))
+    type = db.Column(db.String(45))
+    title = db.Column(db.Text)
+    text = db.Column(db.Text)
+    status_id = db.Column(db.String(255))
+    date_created = db.Column(db.DateTime)
+
+    relation_user_notifications = db.relationship('RelationUserNotifications', backref='notifications')
+
+
+class RelationUserNotifications(db.Model):
+    __tablename__ = 'relation_user_notifications'
+    user_id = db.Column(db.String(255), db.ForeignKey('users.user_id'), primary_key=True)
+    notifications_id = db.Column(db.String(255), db.ForeignKey('notifications.id'), primary_key=True)
 
 

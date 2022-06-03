@@ -42,4 +42,7 @@ def create_app():
     from .status import status as status_blueprint
     app.register_blueprint(status_blueprint)
 
+    from .notifications import notifications as notifications_blueprint
+    app.register_blueprint(notifications_blueprint)
+
     return app

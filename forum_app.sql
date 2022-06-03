@@ -34,6 +34,29 @@ CREATE TABLE `comments` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `notifications`
+--
+
+DROP TABLE IF EXISTS `notifications`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `notifications` (
+  `id` varchar(255) NOT NULL,
+  `user_id` varchar(255) NOT NULL,
+  `type` varchar(45) NOT NULL,
+  `title` text,
+  `text` text,
+  `status_id` varchar(255) NOT NULL,
+  `date_created` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id_idx` (`user_id`),
+  KEY `status_id_notifications_idx` (`status_id`),
+  CONSTRAINT `status_id_notifications` FOREIGN KEY (`status_id`) REFERENCES `status` (`id`),
+  CONSTRAINT `user_id_notifications` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `relation_status_comments`
 --
 
@@ -82,6 +105,23 @@ CREATE TABLE `relation_user_followed` (
   KEY `user_id_followed_idx` (`user_id_followed`),
   CONSTRAINT `user_id_followed` FOREIGN KEY (`user_id_followed`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_id_follower` FOREIGN KEY (`user_id_follower`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `relation_user_notifications`
+--
+
+DROP TABLE IF EXISTS `relation_user_notifications`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `relation_user_notifications` (
+  `user_id` varchar(255) NOT NULL,
+  `notifications_id` varchar(255) NOT NULL,
+  PRIMARY KEY (`user_id`,`notifications_id`),
+  KEY `notifications_id_idx` (`notifications_id`),
+  CONSTRAINT `notifications_id` FOREIGN KEY (`notifications_id`) REFERENCES `notifications` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `user_id_rel_not` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -138,4 +178,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-06-03 14:33:07
+-- Dump completed on 2022-06-03 16:25:12

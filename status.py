@@ -42,7 +42,8 @@ def create_status():
         # Text only status
         if type == "TEXT":
             status = Status()
-            status.id = str(uuid.uuid4())
+            status_id = str(uuid.uuid4())
+            status.id = status_id
             status.user_id = user_id
             status.username = user.username
             status.type = type
@@ -56,12 +57,13 @@ def create_status():
             db.session.add(status)
 
             # Notify followers
-            notifyFollowers(user_id)
+            notifyFollowers(user_id, status_id)
         # Image status
         elif type == "IMAGE" or type == "AUDIO" or type == "VIDEO":
             if media:
                 status = Status()
-                status.id = str(uuid.uuid4())
+                status_id = str(uuid.uuid4())
+                status.id = status_id
                 status.user_id = user_id
                 status.username = user.username
                 status.type = type
@@ -86,7 +88,7 @@ def create_status():
                 db.session.add(status)
 
                 # Notify followers
-                notifyFollowers(user_id)
+                notifyFollowers(user_id, status_id)
             else:
                 response_object['message'] = "Error: No media included!"
         else:
@@ -572,7 +574,11 @@ def like_unlike():
 
             # Notify creator
             creator_id = status.user_id
-            sendNotification("点赞", "有人赞了你的动态", creator_id)
+            title = "点赞"
+            message = "有人赞了你的动态"
+            type = "LIKE"
+            sendNotification(title, message, creator_id)
+            add_notifications(creator_id, type, title, message, status_id)
 
         try:
             db.session.commit()
@@ -644,7 +650,11 @@ def add_comment():
 
         # Notify creator
         creator_id = status.user_id
-        sendNotification("评论", "有人评论了你的动态", creator_id)
+        title = "评论"
+        message = "有人评论了你的动态"
+        type = "COMMENT"
+        sendNotification(title, message, creator_id)
+        add_notifications(creator_id, type, title, message, status_id)
 
         try:
             db.session.commit()
