@@ -30,7 +30,7 @@ def query_notifications():
             notify = Notifications.query.filter_by(id=notifications_id).first()
             item['notifications_id'] = notifications_id
             item['type'] = notify.type
-            item['title'] = notify.type
+            item['title'] = notify.title
             item['text'] = notify.text
             item['status_id'] = notify.status_id
             item['date_created'] = notify.date_created
