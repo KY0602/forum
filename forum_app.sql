@@ -95,7 +95,7 @@ DROP TABLE IF EXISTS `status`;
 CREATE TABLE `status` (
   `id` varchar(255) NOT NULL,
   `user_id` varchar(255) NOT NULL,
-  `username` varchar(45) DEFAULT NULL,
+  `username` varchar(255) NOT NULL,
   `type` varchar(45) NOT NULL,
   `title` varchar(255) NOT NULL,
   `text` text,
@@ -124,6 +124,7 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   `profile_photo` text,
+  `token` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -137,4 +138,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-09 17:56:37
+-- Dump completed on 2022-06-03 14:33:07
