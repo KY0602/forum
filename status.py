@@ -218,6 +218,7 @@ def query_user_status():
 def query_all_status():
     if request.method == 'POST':
         post_data = request.get_json()
+        order_by_like = post_data.get('order_by_like')
         user_id = post_data.get('user_id')
 
     response_object = {}
@@ -233,7 +234,11 @@ def query_all_status():
         for blocked_user in blocked_users:
             blocked_users_id.append(blocked_user.user_id)
 
-        status_list = Status.query.order_by(desc(Status.date_created)).all()
+        if order_by_like == 'true':
+            status_list = Status.query.order_by(desc(Status.like)).all()
+        else:
+            status_list = Status.query.order_by(desc(Status.date_created)).all()
+
         ret = []
         for status in status_list:
             if status.user_id in blocked_users_id:
@@ -258,6 +263,7 @@ def query_all_status():
 def query_followed_status():
     if request.method == 'POST':
         post_data = request.get_json()
+        order_by_like = post_data.get('order_by_like')
         user_id = post_data.get('user_id')
 
     response_object = {}
@@ -278,8 +284,13 @@ def query_followed_status():
         for following_user in following_users:
             following_users_id.append(following_user.user_id)
 
-        status_list = Status.query.filter(or_(*[Status.user_id.like(i) for i in following_users_id]))\
-            .order_by(desc(Status.date_created)).all()
+        if order_by_like == 'true':
+            status_list = Status.query.filter(or_(*[Status.user_id.like(i) for i in following_users_id])) \
+                .order_by(desc(Status.like)).all()
+        else:
+            status_list = Status.query.filter(or_(*[Status.user_id.like(i) for i in following_users_id])) \
+                .order_by(desc(Status.date_created)).all()
+
         ret = []
         for status in status_list:
             if status.user_id in blocked_users_id:
