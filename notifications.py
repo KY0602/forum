@@ -35,7 +35,7 @@ def query_notifications():
             item['status_id'] = notify.status_id
             item['date_created'] = notify.date_created
             ret.append(item)
-        ret.sort(key=lambda x:x['date_created'])
+        ret.sort(key=lambda x:x['date_created'], reverse=True)
         response_object['status'] = True
         response_object['message'] = "Query success!"
         response_object['notifications_list'] = ret
