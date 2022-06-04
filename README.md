@@ -42,5 +42,5 @@ DBSM：MySQL
 2. 使用MySQLWorkBench或任意MySQL工具运行forum_app.sql导入数据库结构即可
 
 ## 前后端接口文档
-[接口文档](https://www.showdoc.com.cn/1931979514400970)
+[接口文档](https://www.showdoc.com.cn/1931979514400970) **【注意更新后端！！！】**
 - 可以用runapi或postman api等接口调试工具手动地上传图片等
