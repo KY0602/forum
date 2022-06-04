@@ -699,6 +699,9 @@ def query_comment():
             comment = Comments.query.filter_by(id=comment_id).first()
             item['comment_id'] = comment_id
             item['user_id'] = comment.user_id
+            user = User.query.filter_by(user_id=comment.user_id).first()
+            if user:
+                item['username'] = user.username
             item['content'] = comment.content
             item['date_created'] = comment.date_created
             ret.append(item)
