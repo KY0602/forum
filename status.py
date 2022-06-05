@@ -585,11 +585,12 @@ def like_unlike():
 
             # Notify creator
             creator_id = status.user_id
-            title = "点赞"
-            message = "有人赞了你的动态"
-            type = "LIKE"
-            sendNotification(title, message, creator_id)
-            add_notifications(creator_id, type, title, message, status_id)
+            if user_id != creator_id:
+                title = "点赞"
+                message = "有人赞了你的动态"
+                type = "LIKE"
+                sendNotification(title, message, creator_id)
+                add_notifications(creator_id, type, title, message, status_id)
 
         try:
             db.session.commit()
@@ -659,13 +660,14 @@ def add_comment():
         db.session.add(comment)
         db.session.add(rel_status_comment)
 
-        # Notify creator
         creator_id = status.user_id
-        title = "评论"
-        message = "有人评论了你的动态"
-        type = "COMMENT"
-        sendNotification(title, message, creator_id)
-        add_notifications(creator_id, type, title, message, status_id)
+        # Notify creator
+        if user_id != creator_id:
+            title = "评论"
+            message = "有人评论了你的动态"
+            type = "COMMENT"
+            sendNotification(title, message, creator_id)
+            add_notifications(creator_id, type, title, message, status_id)
 
         try:
             db.session.commit()
