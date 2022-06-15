@@ -280,31 +280,33 @@ def query_followed_status():
             blocked_users_id.append(blocked_user.user_id)
 
         following_users = user.following
-        following_users_id = []
-        for following_user in following_users:
-            following_users_id.append(following_user.user_id)
-
-        if order_by_like == 'true':
-            status_list = Status.query.filter(or_(*[Status.user_id.like(i) for i in following_users_id])) \
-                .order_by(desc(Status.like)).all()
-        else:
-            status_list = Status.query.filter(or_(*[Status.user_id.like(i) for i in following_users_id])) \
-                .order_by(desc(Status.date_created)).all()
-
         ret = []
-        for status in status_list:
-            if status.user_id in blocked_users_id:
-                continue
-            item = {}
-            item['status_id'] = status.id
-            item['creator_id'] = status.user_id
-            item['creator_username'] = status.username
-            item['type'] = status.type
-            item['title'] = status.title
-            item['text'] = status.text
-            item['date_created'] = status.date_created
-            item['like'] = status.like
-            ret.append(item)
+
+        if len(following_users) != 0:
+            following_users_id = []
+            for following_user in following_users:
+                following_users_id.append(following_user.user_id)
+
+            if order_by_like == 'true':
+                status_list = Status.query.filter(or_(*[Status.user_id.like(i) for i in following_users_id])) \
+                    .order_by(desc(Status.like)).all()
+            else:
+                status_list = Status.query.filter(or_(*[Status.user_id.like(i) for i in following_users_id])) \
+                    .order_by(desc(Status.date_created)).all()
+
+            for status in status_list:
+                if status.user_id in blocked_users_id:
+                    continue
+                item = {}
+                item['status_id'] = status.id
+                item['creator_id'] = status.user_id
+                item['creator_username'] = status.username
+                item['type'] = status.type
+                item['title'] = status.title
+                item['text'] = status.text
+                item['date_created'] = status.date_created
+                item['like'] = status.like
+                ret.append(item)
         response_object['status'] = True
         response_object['message'] = 'Query success!'
         response_object['status_list'] = ret
