@@ -1,9 +1,12 @@
+清华大学软件学院2021/22春季学期《移动应用软件开发》大作业：校园论坛后端
+--
+组长：陈彦扬 组员：霍建宇、白承桓
 ## 运行方法
 1. 进入venv环境：
 ```
 venv/Scripts/activate
 ```
-2. 依次运行以下指令设置flask环境变量：
+2. 依次运行以下指令设置flask环境变量或直接运行run.bat：
 ```
 Powershell: 
 $env:FLASK_APP="__init__.py"
@@ -24,14 +27,8 @@ flask run
 访问localhost:8000，若显示Index则服务器启动成功
 ```
 
-## 登录
-```
-email: admin@gmail.com
-password: Abc123456
-```
-
 ## 数据库
-1. 本地创建数据库：
+1. 本地创建数据库（也可以在config.cfg中更改数据库用户名等）：
 ```
 DBSM：MySQL
 端口：3306
@@ -42,5 +39,4 @@ DBSM：MySQL
 2. 使用MySQLWorkBench或任意MySQL工具运行forum_app.sql导入数据库结构即可
 
 ## 前后端接口文档
-[接口文档](https://www.showdoc.com.cn/1931979514400970) **【注意更新后端！！！】**
-- 可以用runapi或postman api等接口调试工具手动地上传图片等
+[接口文档](https://www.showdoc.com.cn/1931979514400970) 
