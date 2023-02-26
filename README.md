@@ -1,4 +1,4 @@
-校园论坛后端 School Forum Android Application
+校园论坛后端 School Forum Android Application Backend
 --
 ## 运行方法 How to run?
 1. 进入venv环境 Enter virtual environment：
